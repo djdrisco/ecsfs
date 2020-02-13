@@ -34,7 +34,7 @@
 #
 #   a) If you have no hosted zones set up (associated with a Route 53 domain):
 #
-#        aws cloudformation create-stack \
+#       aws cloudformation create-stack \
 #          --stack-name ecsfs \
 #          --template-body file://$(pwd)/stack.yaml \
 #          --capabilities CAPABILITY_NAMED_IAM \
@@ -226,14 +226,19 @@ Resources:
       SubnetId: !Ref PublicSubnetTwo
 
   # Private routing -----------------------------------------------------------
-  NatElasticIP:
-    Type: AWS::EC2::EIP
+
 
   NatGateway:
     Type: AWS::EC2::NatGateway
     Properties:
       AllocationId: !GetAtt NatElasticIP.AllocationId
       SubnetId: !Ref PublicSubnetOne
+
+  NatElasticIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
 
   PrivateRouteTable:
     Type: AWS::EC2::RouteTable
@@ -456,7 +461,8 @@ Resources:
       ExecutionRoleArn: !Ref ExecutionRole
       ContainerDefinitions:
         - Name: ecsfs-backend-container
-          Image: docwhite/ecsfs-backend
+          #Image: docwhite/ecsfs-backend
+          Image: 199630292710.dkr.ecr.us-east-1.amazonaws.com/ecsfs_backend:latest
           PortMappings:
             - ContainerPort: 5000
           LogConfiguration:
@@ -479,7 +485,8 @@ Resources:
       ExecutionRoleArn: !Ref ExecutionRole
       ContainerDefinitions:
         - Name: ecsfs-frontend-container
-          Image: docwhite/ecsfs-frontend
+          #Image: docwhite/ecsfs-frontend
+          Image: 199630292710.dkr.ecr.us-east-1.amazonaws.com/ecsfs_frontend:latest
           PortMappings:
             - ContainerPort: 3000
           LogConfiguration:
@@ -502,7 +509,8 @@ Resources:
       ExecutionRoleArn: !Ref ExecutionRole 
       ContainerDefinitions:
         - Name: ecsfs-nginx-container
-          Image: docwhite/ecsfs-nginx
+          #Image: docwhite/ecsfs-nginx
+          Image: 199630292710.dkr.ecr.us-east-1.amazonaws.com/ecsfs_nginx:latest
           PortMappings:
             - ContainerPort: 80
           LogConfiguration:
